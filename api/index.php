@@ -36,7 +36,7 @@ if ( ! isset( $_GET['no-cache'] ) && file_exists( __ROOT__ . "/cache/{$input->ca
 		fpassthru( $file );
 	} else {
 		header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', filemtime( __ROOT__ . "/cache/{$input->cacheKey}.png" ) + 1814400 ) );
-		header( 'X-Accel-Redirect: ' . "/cache/{$input->cacheKey}.png" ); // If this part is causing you trouble, remove it and uncomment the two following lines:
+		header( 'X-Sendfile: ' . __ROOT__ . "/cache/{$input->cacheKey}.png" ); // If this part is causing you trouble, remove it and uncomment the two following lines:
 	}
 
 	exit;
@@ -67,7 +67,7 @@ $image->save( __ROOT__ . "/cache/{$input->cacheKey}.png", 100 );
 if ( isset( $_GET['debug'] ) ) {
 	echo $image->stream( 'png', 100 );
 } else {
-	header( 'X-Accel-Redirect: ' . "/cache/{$input->cacheKey}.png" );
+	header( 'X-Sendfile: ' . __ROOT__ . "/cache/{$input->cacheKey}.png" );
 }
 
 exit;
