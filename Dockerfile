@@ -1,12 +1,6 @@
 FROM php:7.3-apache
 LABEL maintainer="Ratiugtun <ratiug_tun@homail.com>"
 
-ARG http_proxy
-ARG https_proxy
-ARG no_proxy
-ARG HTTP_PROXY=$http_proxy
-ARG HTTPS_PROXY=$https_proxy
-
 ARG ROOT_URL=http://localhost
 ENV ROOT_URL=$ROOT_URL
 
