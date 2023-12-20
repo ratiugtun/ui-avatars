@@ -48,7 +48,7 @@ define( 'ROOT_URL', getenv( 'ROOT_URL' ) );
 		<p><strong>NEW!</strong> There is now a official <a href="https://github.com/Rackbeat/laravel-ui-avatars" target="_blank">Laravel Wrapper</a></p>
 
 		<div class="promo">
-			<img src="assets/promo.png" width="651" alt="Example avatars"/>
+			<img src="<?=ROOT_URL?>/assets/promo.png" width="651" alt="Example avatars"/>
 		</div>
 	</div>
 
@@ -69,58 +69,58 @@ define( 'ROOT_URL', getenv( 'ROOT_URL' ) );
 	<p>All requests returns a image stream to be used directly in a <code class="inline">&lt;img/&gt;</code> tag.</p>
 
 	<h3>Generate a avatar with default settings, for user "John Doe".</h3>
-	<code class="get" onclick="window.open('api/?name=John+Doe')"><?=ROOT_URL?>/api/?<span class="param">name</span>=<span class="value">John+Doe</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?name=John+Doe')"><?=ROOT_URL?>/api/?<span class="param">name</span>=<span class="value">John+Doe</span></code>
 
 	<h3>Generate a blue avatar</h3>
-	<code class="get" onclick="window.open('api/?background=0D8ABC&color=fff')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">0D8ABC</span>&<span class="param">color</span>=<span
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?background=0D8ABC&color=fff')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">0D8ABC</span>&<span class="param">color</span>=<span
 		class="value">fff</span></code>
 		
 	<h3>Generate a random background avatar.</h3>
 	<p>Avoid passing color as it will be automatically set between black and white.</p>
-		<code class="get" onclick="window.open('api/?background=random')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">random</span></code>
+		<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?background=random')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">random</span></code>
 	
 	<h2>Settings</h2>
 
 	<h3>Image Size (<code class="inline">size</code>)</h3>
 	<p>Avatar image size in pixels. Between: 16 and 512. Default: 64</p>
-	<code class="get" onclick="window.open('api/?size=128')"><?=ROOT_URL?>/api/?<span class="param">size</span>=<span class="value">128</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?size=128')"><?=ROOT_URL?>/api/?<span class="param">size</span>=<span class="value">128</span></code>
 
 	<h3>Font Size (<code class="inline">font-size</code>)</h3>
 	<p>Font size in percentage of <code class="inline">size</code>. Between 0.1 and 1. Default: 0.5</p>
-	<code class="get" onclick="window.open('api/?font-size=0.33')"><?=ROOT_URL?>/api/?<span class="param">font-size</span>=<span class="value">0.33</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?font-size=0.33')"><?=ROOT_URL?>/api/?<span class="param">font-size</span>=<span class="value">0.33</span></code>
 
 	<h3>Initial Characters (<code class="inline">length</code>)</h3>
 	<p>Length of the generated initials. Default: 2</p>
-	<code class="get" onclick="window.open('api/?length=1')"><?=ROOT_URL?>/api/?<span class="param">length</span>=<span class="value">1</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?length=1')"><?=ROOT_URL?>/api/?<span class="param">length</span>=<span class="value">1</span></code>
 
 	<h3>Name (<code class="inline">name</code>)</h3>
 	<p>The name used to generate initials. You can specify the initials yourself as well. Default: John Doe</p>
-	<code class="get" onclick="window.open('api/?name=Elon+Musk')"><?=ROOT_URL?>/api/?<span class="param">name</span>=<span class="value">Elon+Musk</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?name=Elon+Musk')"><?=ROOT_URL?>/api/?<span class="param">name</span>=<span class="value">Elon+Musk</span></code>
 
 	<h3>Rounded Image (<code class="inline">rounded</code>)</h3>
 	<p>Boolean specifying if the returned image should be a circle. Default: false</p>
-	<code class="get" onclick="window.open('api/?rounded=true')"><?=ROOT_URL?>/api/?<span class="param">rounded</span>=<span class="value">true</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?rounded=true')"><?=ROOT_URL?>/api/?<span class="param">rounded</span>=<span class="value">true</span></code>
 
 	<h3>Bold (<code class="inline">bold</code>)</h3>
 	<p>Boolean specifying if the returned letters should use a bold font. Default: false</p>
-	<code class="get" onclick="window.open('api/?bold=true')"><?=ROOT_URL?>/api/?<span class="param">bold</span>=<span class="value">true</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?bold=true')"><?=ROOT_URL?>/api/?<span class="param">bold</span>=<span class="value">true</span></code>
 
 	<h3>Background Color (<code class="inline">background</code>)</h3>
 	<p>Hex color for the image background, without the hash (#). Default: ddd</p>
-	<code class="get" onclick="window.open('api/?background=a0a0a0')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">a0a0a0</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?background=a0a0a0')"><?=ROOT_URL?>/api/?<span class="param">background</span>=<span class="value">a0a0a0</span></code>
 
 	<h3>Font Color (<code class="inline">color</code>)</h3>
 	<p>Hex color for the font, without the hash (#). Default: 222</p>
-	<code class="get" onclick="window.open('api/?color=ff0000')"><?=ROOT_URL?>/api/?<span class="param">color</span>=<span class="value">ff0000</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?color=ff0000')"><?=ROOT_URL?>/api/?<span class="param">color</span>=<span class="value">ff0000</span></code>
 
 	<h3 id="uppercase">Uppercase (<code class="inline">uppercase</code>)</h3>
 	<p>Decide if the API should uppercase the name/initials. Default: true</p>
-	<code class="get" onclick="window.open('api/?uppercase=false&name=different+Case')"><?=ROOT_URL?>/api/?<span class="param">uppercase</span>=<span class="value">false</span>&<span
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?uppercase=false&name=different+Case')"><?=ROOT_URL?>/api/?<span class="param">uppercase</span>=<span class="value">false</span>&<span
 		class="param">name</span>=<span class="value">different+Case</span></code>
 
 	<h3 id="format">Format (<code class="inline">format</code>)</h3>
 	<p>Decide if the API should return SVG or PNG. Default: svg if the <code class="inline">Accept</code> header includes <code class="inline">image/svg+xml</code>, png otherwise</p>
-	<code class="get" onclick="window.open('api/?format=svg')"><?=ROOT_URL?>/api/?<span class="param">format</span>=<span class="value">svg</span></code>
+	<code class="get" onclick="window.open('<?=ROOT_URL?>' + '/api/?format=svg')"><?=ROOT_URL?>/api/?<span class="param">format</span>=<span class="value">svg</span></code>
 
 	<p>All settings above can be mixed together as you desire.</p>
 
