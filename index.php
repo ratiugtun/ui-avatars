@@ -183,6 +183,24 @@ define( 'ROOT_URL', getenv( 'ROOT_URL' ) );
 	<div class="footer">
 		<p>Made by <a href="https://twitter.com/lasserafn" rel="noopener" target="_blank">Lasse Rafn</a> with help of contributors</p>
 		<p><a href="https://github.com/LasseRafn/ui-avatars" rel="noopener" target="_blank">Code on GitHub</a></p>
+		<p><button onclick="toggleHeaders()">Show request headers</button></p>
+		<div id="headers" style="display: none; text-align: left;">
+		<?php
+			foreach (getallheaders() as $name => $value) {
+				echo "$name: $value<br>";
+			}
+		?>
+		</div>
+		<script>
+			function toggleHeaders() {
+				var x = document.getElementById("headers");
+				if (x.style.display === "none") {
+					x.style.display = "block";
+				} else {
+					x.style.display = "none";
+				}
+			}
+		</script>
 	</div>
 </div>
 </body>
