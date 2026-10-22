@@ -20,10 +20,21 @@ $avatar = new LasseRafn\InitialAvatarGenerator\InitialAvatar();
 if ( $input->format === 'svg' ) {
 	header( 'Content-type: image/svg+xml' );
 
-	echo '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' . $input->size . 'px" height="' . $input->size . 'px" viewBox="0 0 ' . $input->size . ' ' . $input->size . '" version="1.1"><' . ( $input->rounded ? 'circle' : 'rect' ) . ' fill="#' . trim( $input->background, '#' ) . '" cx="' . ( $input->size / 2 ) . '" width="' . $input->size . '" height="' . $input->size . '" cy="' . ( $input->size / 2 ) . '" r="' . ( $input->size / 2 ) . '"/><text x="50%" y="50%" style="color: #' . trim( $input->color, '#' ) . '; line-height: 1;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', \'Roboto\', \'Oxygen\', \'Ubuntu\', \'Fira Sans\', \'Droid Sans\', \'Helvetica Neue\', sans-serif;" alignment-baseline="middle" text-anchor="middle" font-size="' . round( $input->size * $input->fontSize ) . '" font-weight="' . ( $input->bold ? 600 : 400 ) . '" dy=".1em" dominant-baseline="middle" fill="#' . trim( $input->color, '#' ) . '">' . $avatar->name( $input->name )
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ->length( $input->length )
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ->keepCase( ! $input->uppercase )
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ->getInitials() . '</text></svg>';
+	// Sanitize user input to prevent XSS attacks
+	$initials = htmlspecialchars(
+		$avatar->name( $input->name )
+		       ->length( $input->length )
+		       ->keepCase( ! $input->uppercase )
+		       ->getInitials(),
+		ENT_QUOTES | ENT_XML1,
+		'UTF-8'
+	);
+
+	// Sanitize colors to prevent injection (allow only alphanumeric and # characters)
+	$background = preg_replace( '/[^a-fA-F0-9#]/', '', trim( $input->background, '#' ) );
+	$color      = preg_replace( '/[^a-fA-F0-9#]/', '', trim( $input->color, '#' ) );
+
+	echo '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' . $input->width . 'px" height="' . $input->height . 'px" viewBox="0 0 ' . $input->width . ' ' . $input->height . '" version="1.1"><' . ( $input->rounded ? 'circle' : 'rect' ) . ' fill="#' . $background . '" cx="' . ( $input->width / 2 ) . '" width="' . $input->width . '" height="' . $input->height . '" cy="' . ( $input->height / 2 ) . '" r="' . ( $input->width / 2 ) . '"/><text x="50%" y="50%" style="color: #' . $color . '; line-height: 1;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', \'Roboto\', \'Oxygen\', \'Ubuntu\', \'Fira Sans\', \'Droid Sans\', \'Helvetica Neue\', sans-serif;" alignment-baseline="middle" text-anchor="middle" font-size="' . round( $input->width * $input->fontSize ) . '" font-weight="' . ( $input->bold ? 600 : 400 ) . '" dy=".1em" dominant-baseline="middle" fill="#' . $color . '">' . $initials . '</text></svg>';
 
 	return;
 } else {
@@ -36,7 +47,7 @@ if ( ! isset( $_GET['no-cache'] ) && file_exists( __ROOT__ . "/cache/{$input->ca
 		fpassthru( $file );
 	} else {
 		header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', filemtime( __ROOT__ . "/cache/{$input->cacheKey}.png" ) + 1814400 ) );
-		header( 'X-Sendfile: ' . __ROOT__ . "/cache/{$input->cacheKey}.png" ); // If this part is causing you trouble, remove it and uncomment the two following lines:
+		header( 'X-Accel-Redirect: ' . "/cache/{$input->cacheKey}.png" ); // If this part is causing you trouble, remove it and uncomment the two following lines:
 	}
 
 	exit;
@@ -47,7 +58,8 @@ header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() + 1814400 ) );
 $image = $avatar->name( $input->name )
                 ->length( $input->length )
                 ->fontSize( $input->fontSize )
-                ->size( $input->size )
+				->width( $input->width )
+				->height( $input->height )
                 ->background( $input->background )
                 ->color( $input->color )
                 ->smooth()
@@ -67,7 +79,7 @@ $image->save( __ROOT__ . "/cache/{$input->cacheKey}.png", 100 );
 if ( isset( $_GET['debug'] ) ) {
 	echo $image->stream( 'png', 100 );
 } else {
-	header( 'X-Sendfile: ' . __ROOT__ . "/cache/{$input->cacheKey}.png" );
+	header( 'X-Accel-Redirect: ' . "/cache/{$input->cacheKey}.png" );
 }
 
 exit;

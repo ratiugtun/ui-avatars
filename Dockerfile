@@ -1,78 +1,70 @@
-FROM php:7.3-apache
+FROM php:8.4-fpm
 LABEL maintainer="Ratiugtun <ratiug_tun@homail.com>"
 
 ARG ROOT_URL=http://localhost
 ENV ROOT_URL=$ROOT_URL
 
-###########################################################################
 # Set Timezone
-###########################################################################
-
 ARG TZ=UTC
 ENV TZ ${TZ}
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-###########################################################################
 # Certificate Authorities
-###########################################################################
-
 COPY ca-certificates/* /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-
-###########################################################################
-# Install PHP Extensions
-###########################################################################
-
-RUN apt-get update -y  \
-    && apt-get install -y \
-        libpng-dev \
-        libzip-dev \
-        libfreetype6-dev \
-        libjpeg-dev \
-        libmcrypt-dev \
-        libapache2-mod-xsendfile \
-        git
-
-RUN docker-php-ext-install iconv \
+# Install system dependencies and Nginx
+RUN apt-get update && apt-get install -y \
+    nginx \
+    git \
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libxpm-dev \
+    libgd-dev \
+    cron \
+    supervisor \
     && docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/include/freetype2 \
-        --with-png-dir=/usr/include \
-        --with-jpeg-dir=/usr/include \
-    && docker-php-ext-install gd zip mbstring \
-    && docker-php-ext-enable gd
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+        --with-xpm \
+    && docker-php-ext-install gd \
+    && rm -rf /var/lib/apt/lists/*
 
+# Keep environment variables (e.g. ROOT_URL) visible to PHP-FPM workers
+RUN echo "clear_env = no" >> /usr/local/etc/php-fpm.d/www.conf
+
+# Install Composer globally
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-###########################################################################
-# Apache Configuration
-###########################################################################
-RUN a2enmod rewrite xsendfile
-
-RUN awk '/DocumentRoot \/var\/www\/html/{print $0 RS "\tXSendFile on" RS "\tXSendFilePath /var/www/html/cache";next}1' /etc/apache2/sites-available/000-default.conf > temp && mv temp /etc/apache2/sites-available/000-default.conf
-
-###########################################################################
-# Deploy ui-avatars
-###########################################################################
-
+# Set working directory
 WORKDIR /var/www/html
 
-RUN mkdir -p cache && chmod 777 cache
+# Copy application source code
+COPY . /var/www/html
 
-COPY Utils ./Utils
-COPY api ./api
-COPY assets ./assets
-COPY cron ./cron
-COPY index.php ./index.php
-COPY composer.json ./composer.json
-COPY composer.lock ./composer.lock
+RUN mkdir -p /var/www/html/cache \
+    && chown -R www-data:www-data cache \
+    && chmod -R 755 cache \
+    && composer install --no-dev --optimize-autoloader \
+    && rm /etc/nginx/sites-enabled/default
 
-# Install composer dependencies
-RUN composer install --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader
+COPY ./.docker/nginx.conf /etc/nginx/nginx.conf
+COPY ./.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Enable mod_rewrite and pretty urls
-COPY .htaccess /var/www/html/.htaccess
+# Set up cron job to clean cache
+COPY ./.docker/cleanup_cron /tmp/cleanup_cron
+RUN crontab -u www-data /tmp/cleanup_cron && rm /tmp/cleanup_cron \
+    && touch /var/log/cron_cleanup.log \
+    && chown www-data:www-data /var/log/cron_cleanup.log
 
-# Setup crontab to run cleanup.php daily on 00:00
-RUN echo "0 0 * * * php /var/www/html/cron/cleanup.php" >> /etc/crontab
+
+RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 8678
+
+CMD ["/usr/bin/supervisord"]
